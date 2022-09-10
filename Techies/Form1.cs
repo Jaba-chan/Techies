@@ -14,11 +14,12 @@ namespace Techies
     
     public partial class Form1 : Form
     {
+        static int bomb_amount = 99;
         static bool Start_Game = false;
         static int net_height = 16;
         static int net_weight = 30;
         static int b_size = 20;
-        int[] black_list = new int[100];
+        int[] black_list = new int[bomb_amount+1];
         int[] weight_point = new int[net_height * net_weight];
         int[] NET = new int[net_weight * net_height];
         static Button[] buttoms_array = new Button[net_weight * net_height];
@@ -38,7 +39,7 @@ namespace Techies
                     right_side[j] = net_weight - 1 + net_weight * j;
                 }
             Random rnd = new Random();
-            for (int i = 1; i < 100; i++)
+            for (int i = 1; i < bomb_amount + 1; i++)
             {
                 var free_for_mine = NET.Except(black_list).ToArray();
                 black_list[i] = free_for_mine[rnd.Next(0, free_for_mine.Length - 1)];
@@ -114,11 +115,10 @@ namespace Techies
                     
                 }
             }
-            for (int i = 1; i < 100; i++)
+            for (int i = 1; i < bomb_amount + 1; i++)
             {
                 buttoms_array[black_list[i]].BackColor = Color.Red;
             }
-            Debug.WriteLine(black_list.Length);
         }
         
         void button_Clicked(object sender, EventArgs e)
