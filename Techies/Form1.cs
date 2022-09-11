@@ -23,17 +23,55 @@ namespace Techies
         Point[] NET = new Point[net_weight * net_height];
         int[,] weight_point = new int[net_weight , net_height];
         static Button[,] buttoms_array = new Button[net_weight , net_height];
+        void Show_Weight()
+        {
+            for (int i = 0; i < net_weight; i++)
+            {
+                for (int j = 0; j < net_height; j++)
+                {
+                    if (!black_list.Contains<Point>(new Point(i, j)))
+                        {
+                        buttoms_array[i,j].Text = weight_point[i, j].ToString();
+                        }
+                    else if (black_list[0].X == i && black_list[0].Y == j)
+                        {
+                        buttoms_array[i, j].Text = weight_point[i, j].ToString();
+                        }
+                }
+            }
+        }
         void Mine(Button trigered)
         {
-            black_list[0] = new Point(trigered.Location.X / net_weight, trigered.Location.Y / net_height);
+            string[] first_click_str = trigered.Name.Split(' ');
+            int first_click_X = Int32.Parse(first_click_str[0]);
+            int first_click_Y = Int32.Parse(first_click_str[1]);
+            black_list[0] = new Point(first_click_X, first_click_Y);
             Random rnd = new Random();
             for (int i = 1; i < bomb_amount + 1; i++)
-            {
+            {   
                 var segment = NET.Except<Point>(black_list).ToArray<Point>();
                 int new_mine_location = rnd.Next(0, segment.Length);
                 black_list[i] = segment[new_mine_location];
-                buttoms_array[black_list[i].X, black_list[i].Y].BackColor = Color.Red;
-            }
+                int X = black_list[i].X;
+                int Y = black_list[i].Y;
+                buttoms_array[X, Y].BackColor = Color.Red;
+                for (int j = - 1; j <= 1; j++)
+                {
+                    for (int z = -1; z <= 1; z++)
+                    {
+                        try
+                        {
+                            weight_point[X + j, Y + z] += 1;
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                }
+
+        }
+           
 
         }
         void button_Clicked(object sender, EventArgs e)
@@ -43,9 +81,11 @@ namespace Techies
             if (Start_Game == false)
             {
                 Mine(trigered_button);
+                Show_Weight();
+                Start_Game = true;
             }
         }
-        void Make_Button(int x, int y, int i)
+        void Make_Button(int x, int y, string i)
         {
             Button button = new Button();
             button.Name = i.ToString();
@@ -69,7 +109,7 @@ namespace Techies
             {
                 for (int j = 0 ; j < net_height; j++)
                 {
-                    Make_Button(i, j, j*net_weight + i);
+                    Make_Button(i, j, i.ToString() + " " + j.ToString());
                     weight_point[i, j] = 0;
                     NET[net_weight * j + i] = new Point(i, j);
                     
