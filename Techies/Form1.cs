@@ -23,6 +23,36 @@ namespace Techies
         Point[] NET = new Point[net_weight * net_height];
         int[,] weight_point = new int[net_weight , net_height];
         static Button[,] buttoms_array = new Button[net_weight , net_height];
+        bool [,] is_cell_opened = new bool[net_weight , net_height];
+
+
+        void Open_Cell(int X, int Y, int previous_weight)
+        {
+            if (is_cell_opened[X, Y] == false && previous_weight != 0)
+            {
+                buttoms_array[X, Y].BackColor = Color.White;
+                is_cell_opened[X, Y] = true;
+                return;
+            }
+            for (int i = - 1; i <= 1; i++)
+            {
+                for (int j = - 1; j <=1; j++)
+                {
+                    try
+                    {
+                        
+                        if (is_cell_opened[X + i, Y + j] == false && weight_point[X + i, Y + j] == 0 && previous_weight == 0)
+                        {
+                            is_cell_opened[X + i, Y + j] = true;
+                            buttoms_array[X + i, Y + j].BackColor = Color.FromArgb(255,255,255,255);
+                            Open_Cell(X + i, Y + j, previous_weight);
+                        }
+                    }
+                    catch { }
+                }
+            }
+        }
+
         void Show_Weight()
         {
             for (int i = 0; i < net_weight; i++)
@@ -56,34 +86,30 @@ namespace Techies
                 int Y = black_list[i].Y;
                 buttoms_array[X, Y].BackColor = Color.Red;
                 for (int j = - 1; j <= 1; j++)
-                {
-                    for (int z = -1; z <= 1; z++)
-                    {
-                        try
-                        {
-                            weight_point[X + j, Y + z] += 1;
-                        }
-                        catch
-                        {
-
-                        }
+                {for (int z = -1; z <= 1; z++)
+                    {try {weight_point[X + j, Y + z] += 1;}
+                        catch{}
                     }
                 }
 
-        }
+            }
            
 
         }
         void button_Clicked(object sender, EventArgs e)
         {
-           
             Button trigered_button = (Button)sender;
+            string[] cliked_button_str = trigered_button.Name.Split(' ');
+            int X = Int32.Parse(cliked_button_str[0]);
+            int Y = Int32.Parse(cliked_button_str[1]);
+            int click_weight = weight_point[X, Y];
             if (Start_Game == false)
             {
                 Mine(trigered_button);
                 Show_Weight();
                 Start_Game = true;
             }
+            Open_Cell(X, Y, click_weight);
         }
         void Make_Button(int x, int y, string i)
         {
@@ -93,7 +119,7 @@ namespace Techies
             buttoms_array[x, y] = button;
             button.Location = new Point(x*b_size, y*b_size);
             button.Click += new System.EventHandler(this.button_Clicked);
-            button.BackColor = Color.FromArgb(255, 211, 211, 211);
+            button.BackColor = Color.FromArgb(255, 200, 200, 200);
             this.Controls.Add(button);
         }
         
@@ -110,6 +136,7 @@ namespace Techies
                 for (int j = 0 ; j < net_height; j++)
                 {
                     Make_Button(i, j, i.ToString() + " " + j.ToString());
+                    is_cell_opened[i, j] = false;
                     weight_point[i, j] = 0;
                     NET[net_weight * j + i] = new Point(i, j);
                     
