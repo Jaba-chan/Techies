@@ -30,8 +30,9 @@ namespace Techies
         {
             if (is_cell_opened[X, Y] == false && previous_weight != 0)
             {
-                buttoms_array[X, Y].BackColor = Color.White;
+                buttoms_array[X, Y].BackColor = Color.FromArgb(255,255,255,255);
                 is_cell_opened[X, Y] = true;
+                previous_weight = weight_point[X, Y];
                 return;
             }
             for (int i = - 1; i <= 1; i++)
@@ -40,13 +41,20 @@ namespace Techies
                 {
                     try
                     {
-                        
-                        if (is_cell_opened[X + i, Y + j] == false && weight_point[X + i, Y + j] == 0 && previous_weight == 0)
+
+                        if (is_cell_opened[X + i, Y + j] == false && weight_point[X + i, Y + j] == 0)
                         {
                             is_cell_opened[X + i, Y + j] = true;
-                            buttoms_array[X + i, Y + j].BackColor = Color.FromArgb(255,255,255,255);
+                            buttoms_array[X + i, Y + j].BackColor = Color.FromArgb(255, 255, 255, 255);
+                            previous_weight = weight_point[X + i, Y + j];
                             Open_Cell(X + i, Y + j, previous_weight);
                         }
+                        else if (is_cell_opened[X + i, Y + j] == false && previous_weight == 0)
+                        {
+                            is_cell_opened[X + i, Y + j] = true;
+                            buttoms_array[X + i, Y + j].BackColor = Color.FromArgb(255, 255, 255, 255);
+                            previous_weight = weight_point[X, Y];
+                        }   
                     }
                     catch { }
                 }
@@ -102,13 +110,13 @@ namespace Techies
             string[] cliked_button_str = trigered_button.Name.Split(' ');
             int X = Int32.Parse(cliked_button_str[0]);
             int Y = Int32.Parse(cliked_button_str[1]);
-            int click_weight = weight_point[X, Y];
             if (Start_Game == false)
             {
                 Mine(trigered_button);
                 Show_Weight();
                 Start_Game = true;
             }
+            int click_weight = weight_point[X, Y]; 
             Open_Cell(X, Y, click_weight);
         }
         void Make_Button(int x, int y, string i)
