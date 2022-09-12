@@ -90,6 +90,8 @@
     <Content Include="Properties\7_m.png" />
     <Content Include="Properties\8_m.png" />
     <Content Include="Properties\cell.png" />
+    <Content Include="Properties\face_broken1.1.png" />
+    <Content Include="Properties\face_crige1.png" />
     <Content Include="Properties\M_G.png" />
     <Content Include="Properties\M_R.png" />
   </ItemGroup>

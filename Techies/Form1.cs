@@ -15,6 +15,10 @@ namespace Techies
     public partial class Form1 : Form
     {
         static int indents = 20;
+        static int face_size_x = 80;
+        static int face_size_y = Convert.ToInt32(face_size_x * 1);
+        Image face_b = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_broken1.1.png");
+        Image face = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_crige1.png");
         Image cell = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/cell.png");
         Image m_r = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_R.png");
         Image m_g = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_G.png");
@@ -29,10 +33,27 @@ namespace Techies
         int[,] weight_point = new int[net_weight , net_height];
         static Button[,] buttoms_array = new Button[net_weight , net_height];
         bool [,] is_cell_opened = new bool[net_weight , net_height];
+        void Restart_Game(object sender, EventArgs e)
+        {
+            Application.Restart();
+        }
 
+        void Restart_Button(int size_x, int size_y)
+        {
+            Button restart_button = new Button();
+            restart_button.BackgroundImage = face_b;
+            restart_button.Size = new Size(size_x, size_y);
+            restart_button.Location = new Point((net_weight*b_size + indents* 2 - size_x) / 2, indents/2);
+            restart_button.FlatStyle = FlatStyle.Flat;
+            restart_button.BackgroundImageLayout = ImageLayout.Stretch;
+            restart_button.FlatAppearance.BorderSize = 0;
+            restart_button.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            restart_button.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            restart_button.Click += new System.EventHandler(this.Restart_Game);
+            this.Controls.Add(restart_button);
+        }
         void Lose(Button mine)
         {
-            
             for (int i = 1; i <= bomb_amount; i++)
             {
                 int x_mime = black_list[i].X;
@@ -97,7 +118,6 @@ namespace Techies
                 black_list[i] = segment[new_mine_location];
                 int X = black_list[i].X;
                 int Y = black_list[i].Y;
-                //buttoms_array[X, Y].BackgroundImage = Pictures_array[0];
                 weight_point[X, Y] = -100;
                 for (int j = - 1; j <= 1; j++)
                 {for (int z = -1; z <= 1; z++)
@@ -105,11 +125,9 @@ namespace Techies
                         catch{}
                     }
                 }
-
             }
-           
-
         }
+
         void button_Clicked(object sender, EventArgs e)
         {
             Button trigered_button = (Button)sender;
@@ -132,9 +150,8 @@ namespace Techies
             button.BackgroundImageLayout = ImageLayout.Stretch;
             button.Size = new Size(b_size, b_size);
             buttoms_array[x, y] = button;
-            button.Location = new Point(x*b_size + indents, y*b_size + indents);
+            button.Location = new Point(x*b_size + indents, y*b_size + indents + top_border);
             button.Click += new System.EventHandler(this.button_Clicked);
-            button.BackColor = Color.FromArgb(255, 200, 200, 200);
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = Color.FromArgb(255, 150, 150, 150);
@@ -150,7 +167,7 @@ namespace Techies
         {
             for (int m_n = 0; m_n <= 8; m_n++) 
             {Pictures_array[m_n] = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/"+ m_n.ToString()+ "_m.png");}
-            this.ClientSize = new Size(net_weight*b_size + indents*2, net_height*b_size + indents*2);
+            this.ClientSize = new Size(net_weight*b_size + indents*2, net_height*b_size + indents*2 + top_border);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
@@ -158,11 +175,11 @@ namespace Techies
             {
                 for (int j = 0 ; j < net_height; j++)
                 {
+                    Restart_Button(face_size_x, face_size_y);
                     Make_Button(i, j, i.ToString() + " " + j.ToString());
                     is_cell_opened[i, j] = false;
                     weight_point[i, j] = 0;
                     NET[net_weight * j + i] = new Point(i, j);
-                    
                 }
             }
         }
