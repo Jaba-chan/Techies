@@ -33,29 +33,35 @@ namespace Techies
         Point[] black_list = new Point[bomb_amount+1];
         Point[] NET = new Point[net_weight * net_height];
         int[,] weight_point = new int[net_weight , net_height];
-        static Button[,] buttoms_array = new Button[net_weight , net_height];
+        Button[,] buttoms_array = new Button[net_weight , net_height];
         bool [,] is_cell_opened = new bool[net_weight , net_height];
-        void Restart_Game(object sender, EventArgs e)
+        bool[,] flags = new bool[net_weight , net_height];
+        void Restart_Game(object sender, MouseEventArgs e)
         {
             Button triggered_button = sender as Button;
-            triggered_button.BackgroundImage = face_d;
-            triggered_button.BackgroundImage = face_u;
-            ///Application.Restart();
+            string[] coordinate_srt = triggered_button.Name.Split(' ');
+            int X = Int32.Parse(coordinate_srt[0]);
+            int Y = Int32.Parse(coordinate_srt[1]);
+
+            if(e.Button == MouseButtons.Right)
+            {
+                flags[X, Y] = !flags[X, Y];
+            }
         }
 
-        void Restart_Button(int size_x, int size_y)
+        void Restart_Buttons(int size_x, int size_y)
         {
-            Button restart_button = new Button();
-            restart_button.BackgroundImage = face_u;
-            restart_button.Size = new Size(size_x, size_y);
-            restart_button.Location = new Point((net_weight*b_size + indents* 2 - size_x) / 2, indents/2);
-            restart_button.FlatStyle = FlatStyle.Flat;
-            restart_button.BackgroundImageLayout = ImageLayout.Stretch;
-            restart_button.FlatAppearance.BorderSize = 0;
-            restart_button.FlatAppearance.MouseDownBackColor = Color.Transparent;
-            restart_button.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            restart_button.Click += new System.EventHandler(this.Restart_Game);
-            this.Controls.Add(restart_button);
+            Button button = new Button();
+            button.Size = new Size(size_x, size_y);
+            button.Location = new Point((net_weight*b_size + indents* 2 - size_x) / 2, indents/2);
+            button.FlatStyle = FlatStyle.Flat;
+            button.BackgroundImageLayout = ImageLayout.Stretch;
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatAppearance.MouseDownBackColor = Color.Transparent;
+            button.FlatAppearance.MouseOverBackColor = Color.Transparent;
+            button.MouseClick += Restart_Game;
+            button.BackgroundImage = face_u;
+            this.Controls.Add(button);
         }
         void Lose(Button mine)
         {
@@ -133,7 +139,7 @@ namespace Techies
             }
         }
 
-        void button_Clicked(object sender, EventArgs e)
+        void button_Clicked(object sender, MouseEventArgs e)
         {
             Button trigered_button = (Button)sender;
             string[] cliked_button_str = trigered_button.Name.Split(' ');
@@ -156,7 +162,7 @@ namespace Techies
             button.Size = new Size(b_size, b_size);
             buttoms_array[x, y] = button;
             button.Location = new Point(x*b_size + indents, y*b_size + indents + top_border);
-            button.Click += new System.EventHandler(this.button_Clicked);
+            button.MouseClick += button_Clicked;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = Color.FromArgb(255, 150, 150, 150);
@@ -175,12 +181,13 @@ namespace Techies
             this.ClientSize = new Size(net_weight*b_size + indents*2, net_height*b_size + indents*2 + top_border);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.FromArgb(255, 249, 249, 249);
             this.MaximizeBox = false;
             for (int i = 0 ; i <net_weight;  i++)
             {
                 for (int j = 0 ; j < net_height; j++)
                 {
-                    Restart_Button(face_size_x, face_size_y);
+                    Restart_Buttons(face_size_x, face_size_y);
                     Make_Button(i, j, i.ToString() + " " + j.ToString());
                     is_cell_opened[i, j] = false;
                     weight_point[i, j] = 0;
