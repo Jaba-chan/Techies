@@ -15,9 +15,11 @@ namespace Techies
     public partial class Form1 : Form
     {
         static int indents = 20;
-        static int face_size_x = 80;
+        static int top_border = 60;
+        static int face_size_x = 60;
         static int face_size_y = Convert.ToInt32(face_size_x * 1);
-        Image face_b = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_broken1.1.png");
+        Image face_u = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_unpress.png");
+        Image face_d = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_press.png");
         Image face = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_crige1.png");
         Image cell = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/cell.png");
         Image m_r = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_R.png");
@@ -35,13 +37,16 @@ namespace Techies
         bool [,] is_cell_opened = new bool[net_weight , net_height];
         void Restart_Game(object sender, EventArgs e)
         {
-            Application.Restart();
+            Button triggered_button = sender as Button;
+            triggered_button.BackgroundImage = face_d;
+            triggered_button.BackgroundImage = face_u;
+            ///Application.Restart();
         }
 
         void Restart_Button(int size_x, int size_y)
         {
             Button restart_button = new Button();
-            restart_button.BackgroundImage = face_b;
+            restart_button.BackgroundImage = face_u;
             restart_button.Size = new Size(size_x, size_y);
             restart_button.Location = new Point((net_weight*b_size + indents* 2 - size_x) / 2, indents/2);
             restart_button.FlatStyle = FlatStyle.Flat;

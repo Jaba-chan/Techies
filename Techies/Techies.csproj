@@ -92,6 +92,8 @@
     <Content Include="Properties\cell.png" />
     <Content Include="Properties\face_broken1.1.png" />
     <Content Include="Properties\face_crige1.png" />
+    <Content Include="Properties\face_press.png" />
+    <Content Include="Properties\face_unpress.png" />
     <Content Include="Properties\M_G.png" />
     <Content Include="Properties\M_R.png" />
   </ItemGroup>
