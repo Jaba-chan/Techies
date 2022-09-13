@@ -18,17 +18,19 @@ namespace Techies
         static int top_border = 60;
         static int face_size_x = 60;
         static int face_size_y = Convert.ToInt32(face_size_x * 1);
+        static int marked_cell = 0;
         Image face_u = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_unpress.png");
         Image face_d = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_press.png");
         Image face = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/face_crige1.png");
         Image cell = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/cell.png");
         Image m_r = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_R.png");
         Image m_g = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_G.png");
+        Image flag_image = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/flag.png");
         Image[] Pictures_array = new Image[9];
-        static int bomb_amount = 99;
+        static int bomb_amount = 2;
         static bool Start_Game = false;
-        static int net_height = 16;
-        static int net_weight = 30;
+        static int net_height = 4;
+        static int net_weight = 4;
         static int b_size = 30;
         Point[] black_list = new Point[bomb_amount+1];
         Point[] NET = new Point[net_weight * net_height];
@@ -38,15 +40,7 @@ namespace Techies
         bool[,] flags = new bool[net_weight , net_height];
         void Restart_Game(object sender, MouseEventArgs e)
         {
-            Button triggered_button = sender as Button;
-            string[] coordinate_srt = triggered_button.Name.Split(' ');
-            int X = Int32.Parse(coordinate_srt[0]);
-            int Y = Int32.Parse(coordinate_srt[1]);
-
-            if(e.Button == MouseButtons.Right)
-            {
-                flags[X, Y] = !flags[X, Y];
-            }
+            Application.Restart();
         }
 
         void Restart_Buttons(int size_x, int size_y)
@@ -72,19 +66,27 @@ namespace Techies
                 buttoms_array[x_mime, y_mine].BackgroundImage = m_g; 
             }
             mine.BackgroundImage = m_r;
-            MessageBox.Show("Ихихихи");
+            MessageBox.Show("You Lose!");
+        }
+        void Win()
+        {
+            MessageBox.Show("You Win!");
+            Debug.WriteLine(marked_cell);
         }
         void Open_Cell(int X, int Y, int previous_weight)
         {
             if (weight_point[X, Y] < 0)
-            { Lose(buttoms_array[X, Y]);}
+            { Lose(buttoms_array[X, Y]); return; }
             else
             {
                 if (is_cell_opened[X, Y] == false && previous_weight != 0)
                 {
                     buttoms_array[X, Y].BackgroundImage = Pictures_array[weight_point[X, Y]];
+                    buttoms_array[X, Y].Enabled = false;
                     is_cell_opened[X, Y] = true;
                     previous_weight = weight_point[X, Y];
+                    marked_cell += 1;
+                    Debug.WriteLine(marked_cell);
                     return;
                 }
             }
@@ -102,12 +104,18 @@ namespace Techies
                             buttoms_array[X + i, Y + j].BackgroundImage = Pictures_array[weight_point[X + i, Y + j]];
                             previous_weight = weight_point[X + i, Y + j];
                             Open_Cell(X + i, Y + j, previous_weight);
+                            buttoms_array[X + i, Y + j].Enabled = false;
+                            marked_cell += 1;
+                            Debug.WriteLine(marked_cell);
                         }
                         else if (is_cell_opened[X + i, Y + j] == false && previous_weight == 0)
                         {
                             is_cell_opened[X + i, Y + j] = true;
                             buttoms_array[X + i, Y + j].BackgroundImage = Pictures_array[weight_point[X + i, Y + j]];
                             previous_weight = weight_point[X, Y];
+                            buttoms_array[X +i, Y + j].Enabled = false;
+                            marked_cell += 1;
+                            Debug.WriteLine(marked_cell);
                         }   
                     }
                     catch { }
@@ -141,17 +149,35 @@ namespace Techies
 
         void button_Clicked(object sender, MouseEventArgs e)
         {
-            Button trigered_button = (Button)sender;
+            Button trigered_button = (Button)sender; 
             string[] cliked_button_str = trigered_button.Name.Split(' ');
             int X = Int32.Parse(cliked_button_str[0]);
             int Y = Int32.Parse(cliked_button_str[1]);
+
+            if (e.Button == MouseButtons.Right)
+            {
+                if (flags[X, Y] == false) {trigered_button.BackgroundImage = flag_image;}
+                if (flags[X, Y] == true) { trigered_button.BackgroundImage = cell;}
+                flags[X, Y] = !flags[X, Y];
+
+                return;
+            }
+
             if (Start_Game == false)
             {
                 Mine(trigered_button);
                 Start_Game = true;
             }
-            int click_weight = weight_point[X, Y]; 
-            Open_Cell(X, Y, click_weight);
+            if (flags[X, Y] != true)
+            {
+                int click_weight = weight_point[X, Y];
+                Open_Cell(X, Y, click_weight);
+                trigered_button.Enabled = false;
+            }
+            if (marked_cell == (net_height * net_weight) - (bomb_amount))
+            {
+                Win();
+            }
         }
         void Make_Button(int x, int y, string i)
         {
@@ -162,7 +188,7 @@ namespace Techies
             button.Size = new Size(b_size, b_size);
             buttoms_array[x, y] = button;
             button.Location = new Point(x*b_size + indents, y*b_size + indents + top_border);
-            button.MouseClick += button_Clicked;
+            button.MouseDown += button_Clicked;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = Color.FromArgb(255, 150, 150, 150);
@@ -187,6 +213,7 @@ namespace Techies
             {
                 for (int j = 0 ; j < net_height; j++)
                 {
+                    flags[i, j] = false;
                     Restart_Buttons(face_size_x, face_size_y);
                     Make_Button(i, j, i.ToString() + " " + j.ToString());
                     is_cell_opened[i, j] = false;
