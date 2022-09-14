@@ -27,10 +27,10 @@ namespace Techies
         Image m_g = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/M_G.png");
         Image flag_image = Image.FromFile("C:/Users/kuzak/source/repos/Techies/Techies/Properties/flag.png");
         Image[] Pictures_array = new Image[9];
-        static int bomb_amount = 2;
+        static int bomb_amount = 99;
         static bool Start_Game = false;
-        static int net_height = 4;
-        static int net_weight = 4;
+        static int net_height = 16;
+        static int net_weight = 30;
         static int b_size = 30;
         Point[] black_list = new Point[bomb_amount+1];
         Point[] NET = new Point[net_weight * net_height];
@@ -86,7 +86,6 @@ namespace Techies
                     is_cell_opened[X, Y] = true;
                     previous_weight = weight_point[X, Y];
                     marked_cell += 1;
-                    Debug.WriteLine(marked_cell);
                     return;
                 }
             }
@@ -106,7 +105,6 @@ namespace Techies
                             Open_Cell(X + i, Y + j, previous_weight);
                             buttoms_array[X + i, Y + j].Enabled = false;
                             marked_cell += 1;
-                            Debug.WriteLine(marked_cell);
                         }
                         else if (is_cell_opened[X + i, Y + j] == false && previous_weight == 0)
                         {
@@ -115,7 +113,6 @@ namespace Techies
                             previous_weight = weight_point[X, Y];
                             buttoms_array[X +i, Y + j].Enabled = false;
                             marked_cell += 1;
-                            Debug.WriteLine(marked_cell);
                         }   
                     }
                     catch { }
